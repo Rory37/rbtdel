@@ -6,10 +6,10 @@
 using namespace std;
 
 void print(node*, int);
-void add(node*, node*, int);
-void leftro(node*, node*);
-void rightro(node*, node*);
-void fix(node*, node*);
+void add(node**, node*, int);
+void leftro(node**, node*);
+void rightro(node**, node*);
+void fix(node**, node*);
 
 int main() {
   node* root = new node();
@@ -22,7 +22,7 @@ int main() {
       cout << "What number do you want to add" << endl;
       int in;
       cin >> in;
-      add(root, root, in);//runs add
+      add(&root, root, in);//runs add
     }
     else if (strcmp(input, "quit") == 0) {
       s = false;//exits loop and program
@@ -33,7 +33,7 @@ int main() {
   }
 }
 
-void add (node* root, node* parent, int toin){
+void add (node** root, node* parent, int toin){
   if (parent -> getData() == 0) {
     parent -> setCol(1);
     parent -> setData(toin);
@@ -86,15 +86,15 @@ void print(node* parent, int count) {
   }
 }
 
-void leftro(node* root, node* toro) {
+void leftro(node** root, node* toro) {
   node* y = toro -> getRight(); //Holds onto the rotated nodes left
   toro -> setRight(y -> getLeft());//shifts the y left branch to be original node right branch
   if(y -> getLeft() != NULL) {//new parent for left branch must be toro
     y -> getLeft() -> setParent(toro);
   }
   y -> setParent(toro -> getParent());
-  if(toro == root) { //if at root
-    root = y; //new root is the y
+  if(toro == (*root)) { //if at root
+    (*root) = y; //new root is the y
   }
   else {
     if(toro == toro -> getParent() -> getLeft()) {//if was the left child of parent
@@ -108,7 +108,7 @@ void leftro(node* root, node* toro) {
   toro -> setParent(y);//orig node parent is now y
 }
 
-void rightro(node* root, node* toro) {
+void rightro(node** root, node* toro) {
   node* y = toro -> getLeft(); //Holds onto the rotated node's right
   toro -> setLeft(y -> getRight());//shifts the y right branch to be original node left branch
   y -> getRight() -> setParent(toro);
@@ -116,8 +116,8 @@ void rightro(node* root, node* toro) {
     y -> getRight() -> setParent(toro);
   }
   y -> setParent(toro -> getParent());
-  if(toro == root) { //if at root
-    root = y; //new root is the y
+  if(toro == (*root)) { //if at root
+    (*root) = y; //new root is the y
   }
   else {
     if(toro = toro -> getParent() -> getLeft()) {//if was the left child of parent
@@ -131,8 +131,8 @@ void rightro(node* root, node* toro) {
   toro -> setParent(y);//orig node parent is now y
 }
 
-void fix (node* root, node* z) {
-  while(z -> getParent() != NULL && z -> getParent() -> getCol() == 0 && z != root) {
+void fix (node** root, node* z) {
+  while(z -> getParent() != NULL && z -> getParent() -> getCol() == 0 && z != (*root)) {
     //if z parent is grandparents left
     if(z -> getParent() == z -> getParent() -> getParent() -> getLeft()) {
       node* y = z -> getParent() -> getParent() -> getRight(); // uncle to z
@@ -171,5 +171,5 @@ void fix (node* root, node* z) {
       }
     }
   }
-  root -> setCol(1); //root is black
+  (*root) -> setCol(1); //root is black
 }
