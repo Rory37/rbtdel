@@ -7,6 +7,7 @@ using namespace std;
 
 void print(node*, int);
 void add(node**, node*, int);
+void read(node**);
 void leftro(node**, node*);
 void rightro(node**, node*);
 void fix(node**, node*);
@@ -29,6 +30,9 @@ int main() {
     }
     else if (strcmp(input, "print") == 0) {
       print(root, 0);//prints the tree
+    }
+    else if (strcmp(input, "read") == 0) {
+      read(&root);
     }
   }
 }
@@ -64,6 +68,27 @@ void add (node** root, node* parent, int toin){
       }
     }
   }
+}
+
+void read(node** root) {
+  cout << "Please input a filename" << endl;
+  char filename[80];//for name of file
+  cin.ignore();//ignores past cin
+  cin.getline(filename, 80);//takes in the name
+  ifstream newFile; //new file
+  newFile.open(filename);//opens file with the name put in
+  if (newFile == NULL) {//if file doesn't exist
+    cout << "There was an error reading the file" << endl;
+  }
+  else {
+    while (newFile.eof() != true) {//while not end of file
+      char* s = new char[4];
+      newFile.getline(s, 5, ',');
+      int in = atoi(s);
+      add(&(*root), (*root), in); //adds over split in whitespace
+    }
+  }
+  newFile.close();//closes file
 }
 
 void print(node* parent, int count) {
@@ -111,7 +136,7 @@ void leftro(node** root, node* toro) {
 void rightro(node** root, node* toro) {
   node* y = toro -> getLeft(); //Holds onto the rotated node's right
   toro -> setLeft(y -> getRight());//shifts the y right branch to be original node left branch
-  y -> getRight() -> setParent(toro);
+  //y -> getRight() -> setParent(toro);
   if(y -> getRight() != NULL) {//new parent for right branch must be toro
     y -> getRight() -> setParent(toro);
   }
@@ -120,7 +145,7 @@ void rightro(node** root, node* toro) {
     (*root) = y; //new root is the y
   }
   else {
-    if(toro = toro -> getParent() -> getLeft()) {//if was the left child of parent
+    if(toro == toro -> getParent() -> getLeft()) {//if was the left child of parent
       toro -> getParent() -> setLeft(y); //parents left is now y
     }
     else{
@@ -132,7 +157,7 @@ void rightro(node** root, node* toro) {
 }
 
 void fix (node** root, node* z) {
-  while(z -> getParent() != NULL && z -> getParent() -> getCol() == 0 && z != (*root)) {
+  while(z -> getParent() != NULL && z -> getParent() -> getCol() == 0 && z != (*root)) {//while not root and red
     //if z parent is grandparents left
     if(z -> getParent() == z -> getParent() -> getParent() -> getLeft()) {
       node* y = z -> getParent() -> getParent() -> getRight(); // uncle to z
