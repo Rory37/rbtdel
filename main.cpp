@@ -13,16 +13,16 @@ void rightro(node**, node*);
 void fix(node**, node*);
 
 int main() {
-  node* root = new node();
+  node* root = new node(); //will be root of tree
   bool s = true;
   while(s == true) {//repeats till quit is typed
     cout << "Please choose to either add, read, print or quit" << endl;
     char input [80];
-    cin >> input;
+    cin >> input;//Takes in command from console
     if (strcmp(input, "add") == 0) {
       cout << "What number do you want to add" << endl;
       int in;
-      cin >> in;
+      cin >> in;//takes in number
       add(&root, root, in);//runs add
     }
     else if (strcmp(input, "quit") == 0) {
@@ -31,25 +31,25 @@ int main() {
     else if (strcmp(input, "print") == 0) {
       print(root, 0);//prints the tree
     }
-    else if (strcmp(input, "read") == 0) {
-      read(&root);
+    else if (strcmp(input, "read") == 0) {//will read in a file separated only by commas
+      read(&root); //Passes root by reference so it changes if edited outside main
     }
   }
 }
 
 void add (node** root, node* parent, int toin){
-  if (parent -> getData() == 0) {
-    parent -> setCol(1);
-    parent -> setData(toin);
+  if (parent -> getData() == 0) {//Will only be the case with the first pass in of root
+    parent -> setCol(1);//becomes black
+    parent -> setData(toin);//sets the data to be input
   }
   else { //adds like basic binary tree
     if(toin < parent -> getData()) {//if less than data of parent
       if (parent -> getLeft() == NULL) {//if left doesn't exists
-	node* newnode = new node();
-	newnode -> setData(toin);
-	newnode -> setParent(parent);
+	node* newnode = new node(); //Makes new node
+	newnode -> setData(toin); //Sets node data to be input
+	newnode -> setParent(parent); //Sets the new nodes parents
 	parent -> setLeft(newnode);//adds on left
-	fix(root, newnode);
+	fix(root, newnode); //Preserves red black properties
       }
       else {
 	add(root, parent -> getLeft(), toin);//runs with node to the left
@@ -57,11 +57,11 @@ void add (node** root, node* parent, int toin){
     }
     else { //if right or equal
       if (parent -> getRight() == NULL) { //if right doesn't exist
-	node* newnode = new node();
-	newnode -> setData(toin);
-	newnode -> setParent(parent);
+	node* newnode = new node(); //Makes new node
+	newnode -> setData(toin);///Sets data to input
+	newnode -> setParent(parent); //sets parent of new node
 	parent -> setRight(newnode);//inserted to right
-	fix(root, newnode);
+	fix(root, newnode); //Preserves red black properties
       }
       else{
 	add(root, parent -> getRight(), toin);//runs with one to the right
@@ -70,7 +70,7 @@ void add (node** root, node* parent, int toin){
   }
 }
 
-void read(node** root) {
+void read(node** root) { //read in file
   cout << "Please input a filename" << endl;
   char filename[80];//for name of file
   cin.ignore();//ignores past cin
@@ -82,10 +82,10 @@ void read(node** root) {
   }
   else {
     while (newFile.eof() != true) {//while not end of file
-      char* s = new char[4];
-      newFile.getline(s, 5, ',');
-      int in = atoi(s);
-      add(&(*root), (*root), in); //adds over split in whitespace
+      char* s = new char[4]; //will hold number in char array
+      newFile.getline(s, 5, ',');//gets line splitting over comma
+      int in = atoi(s); //converts to int
+      add(&(*root), (*root), in); //Runs add with each data segment
     }
   }
   newFile.close();//closes file
@@ -101,10 +101,10 @@ void print(node* parent, int count) {
     count --;
   }
   if (parent -> getCol() == 0) {
-    cout << "\033[31m" << parent -> getData()<< "\033[0m" << endl;//prints the node data
+    cout << "\033[31m" << parent -> getData()<< "\033[0m" << endl;//prints the node data (Red)
   }
   else{
-    cout << parent -> getData() << endl;//prints the node data
+    cout << parent -> getData() << endl;//prints the node data (Black, but will display as white)
   }
   if (parent -> getLeft() != NULL) {//if left exists
     print(parent -> getLeft(), temp + 1);//runs for one to the left
