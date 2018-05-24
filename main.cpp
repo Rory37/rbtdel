@@ -11,13 +11,14 @@ void read(node**);
 void leftro(node**, node*);
 void rightro(node**, node*);
 void fix(node**, node*);
-void search (node*);
+node* search(node*, int);
+void del(node**, int);
 
 int main() {
   node* root = new node(); //will be root of tree
   bool s = true;
   while(s == true) {//repeats till quit is typed
-    cout << "Please choose to either add, read, print, search or quit" << endl;
+    cout << "Please choose to either add, read, print, search, delete or quit" << endl;
     char input [80];
     cin >> input;//Takes in command from console
     if (strcmp(input, "add") == 0) {
@@ -36,7 +37,17 @@ int main() {
       read(&root); //Passes root by reference so it changes if edited outside main
     }
     else if (strcmp(input, "search") == 0) {
-      search(root);
+      int in;
+      cout << "What number do you want to search for" << endl;
+      cin.ignore();
+      cin >> in;
+      search(root, in);
+    }
+    else if (strcmp(input, "delete") == 0) {
+      cout << "What number do you want to delete" << endl;
+      int in;
+      cin >> in;//takes in number  
+      del(&root, in); //Passes root by reference so it can be changed in main.cpp
     }
   }
 }
@@ -202,15 +213,11 @@ void fix (node** root, node* z) {
   (*root) -> setCol(1); //root is black (case 1)
 }
 
-void search (node* check) {
-  int in;
-  cout << "What number do you want to search for" << endl;
-  cin.ignore();
-  cin >> in;
+node* search (node* check, int in) {
   while (check != NULL) {//until end of tree
     if (in == check -> getData()) {//If data does match
       cout << "The number " << in << " is in the tree." << endl;
-      return;//exits search
+      return check;//exits search
     }
     else if (in < check -> getData()){ //if the input is less than node data
       check = check -> getLeft(); //go down left branch
@@ -219,5 +226,15 @@ void search (node* check) {
       check = check -> getRight();//go down right branch
     }
   }
-  cout << "The number " << in << " is not in the tree" << endl;
+  cout << "The number " << in << " is not in the tree" << endl; //num not in tree
+  return NULL;
+}
+
+void del (node** root, int del) {
+  node* deleting = search((*root), del);
+  if (deleting != NULL) {
+    if (deleting -> getLeft() == NULL || deleting -> getRight() == NULL) {
+
+    }
+  }
 }
