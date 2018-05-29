@@ -13,6 +13,8 @@ void rightro(node**, node*);
 void fix(node**, node*);
 node* search(node*, int);
 void del(node**, int);
+node* successor(node*);
+void fixdel(node**, node*);
 
 int main() {
   node* root = new node(); //will be root of tree
@@ -232,9 +234,102 @@ node* search (node* check, int in) {
 
 void del (node** root, int del) {
   node* deleting = search((*root), del);
+  node* tracker = NULL;
+  node* trackchild;
   if (deleting != NULL) {
     if (deleting -> getLeft() == NULL || deleting -> getRight() == NULL) {
+      tracker = deleting;
+    }
+    else {
+      tracker = successor(deleting);
+    }
+    if(tracker -> getLeft() != NULL) {
+      trackchild = tracker -> getLeft();
+    }
+    else{
+      trackchild = tracker -> getRight();
+    }
+    if(tracker == (*root)) {//is root
+      (*root) = trackchild;//root becomes the child
+    }
+    else if (tracker == tracker -> getParent() -> getLeft()){//is left child
+      tracker -> getParent() -> setLeft(trackchild); 
+    }
+    else {
+      tracker -> getParent() -> setRight(trackchild);
+    }
+    if (tracker != deleting) { //got successor
+      deleting -> setData(tracker -> getData());
+    }
+    if(tracker -> getCol() == 1) {
+      fixdel(root, trackchild);
+    }
+    //all pseudo say to return tracker not sure why
+  }
+}
 
+void fixdel(node** root, node* fixmain) {
+  while (fixmain != (*root) && fixmain != NULL && fixmain -> getCol() == 1) {//It doesn't run right since NULL isn't technically a node I think
+    if(fixmain == fixmain -> getParent() -> getLeft()) {
+      node* sibling = fixmain -> getParent() -> getRight();
+      if(sibling != NULL && sibling -> getCol() == 0) {//Case 1
+	sibling -> setCol(1);
+	fixmain -> getParent() -> setCol(0);
+	leftro(root, fixmain -> getParent());
+	sibling = fixmain -> getParent() -> getRight();
+      }
+      if((sibling -> getLeft() != NULL || sibling -> getLeft() -> getCol() == 1) && (sibling -> getRight() != NULL || sibling -> getRight() -> getCol() == 1)) { //if both childs black case 2
+	sibling -> setCol(0);
+	fixmain = fixmain -> getParent();
+	if (sibling -> getRight() != NULL && sibling -> getRight() -> getCol() == 1) { //case 3
+	  sibling -> getLeft() -> setCol(1);
+	  sibling -> setCol(0);
+	  rightro(root, sibling);
+	  sibling = fixmain -> getParent() -> getRight();
+	}
+	sibling -> setCol(fixmain -> getParent() -> getCol()); //Case 4
+	fixmain -> getParent() -> setCol(1);
+	sibling -> getRight() -> setCol(1);
+	leftro(root, fixmain -> getParent());
+	fixmain = (*root);
+      }
+    }
+    else {
+      node* sibling = fixmain -> getParent() -> getLeft();
+      if(sibling != NULL && sibling -> getCol() == 0) {//Case 1
+	sibling -> setCol(1);
+	fixmain -> getParent() -> setCol(0);
+	rightro(root, fixmain -> getParent());
+	sibling = fixmain -> getParent() -> getLeft();
+      }
+      if((sibling -> getLeft() != NULL || sibling -> getLeft() -> getCol() == 1) && (sibling -> getRight() != NULL || sibling -> getRight() -> getCol() == 1)) { //if both childs black case 2
+	sibling -> setCol(0);
+	fixmain = fixmain -> getParent();
+	if (sibling -> getLeft() != NULL && sibling -> getLeft() -> getCol() == 1) { //case 3
+	  sibling -> getRight() -> setCol(1);
+	  sibling -> setCol(0);
+	  leftro(root, sibling);
+	  sibling = fixmain -> getParent() -> getLeft();
+	}
+	sibling -> setCol(fixmain -> getParent() -> getCol()); //Case 4
+	fixmain -> getParent() -> setCol(1);
+	sibling -> getLeft() -> setCol(1);
+	rightro(root, fixmain -> getParent());
+	fixmain = (*root);
+      }
     }
   }
+  if(fixmain != NULL) {
+    fixmain -> setCol(1);
+  }
+}
+
+node* successor(node* top) {
+  if(top -> getRight() != NULL) {
+    top = top -> getRight();
+  }
+  while(top -> getLeft() != NULL) {
+    top = top -> getLeft();
+  }
+  return top;
 }
