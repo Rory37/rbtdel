@@ -243,12 +243,18 @@ void del (node** root, int del) {
     else {
       tracker = successor(deleting);
     }
+    if(tracker -> getCol() == 1) {
+      fixdel(root, tracker);
+    }
     if(tracker -> getLeft() != NULL) {
       trackchild = tracker -> getLeft();
     }
     else{
       trackchild = tracker -> getRight();
     }
+    //if(tracker -> getCol() == 1) {
+      //fixdel(root, tracker);
+      //}
     if(tracker == (*root)) {//is root
       (*root) = trackchild;//root becomes the child
     }
@@ -261,15 +267,15 @@ void del (node** root, int del) {
     if (tracker != deleting) { //got successor
       deleting -> setData(tracker -> getData());
     }
-    if(tracker -> getCol() == 1) {
-      fixdel(root, trackchild);
-    }
+    //if(tracker -> getCol() == 1) {
+    //fixdel(root, trackchild);
+    //}
     //probably should return tracker to delete
   }
 }
 
 void fixdel(node** root, node* fixmain) {
-  while (fixmain != (*root) && fixmain != NULL && fixmain -> getCol() == 1) {//It doesn't run right since NULL isn't technically a node I think
+  while (fixmain != (*root) && fixmain -> getCol() == 1) {//It doesn't run right since NULL isn't technically a node I think
     if(fixmain == fixmain -> getParent() -> getLeft()) {
       node* sibling = fixmain -> getParent() -> getRight();
       if(sibling != NULL && sibling -> getCol() == 0) {//Case 1 sibling is red
@@ -278,21 +284,30 @@ void fixdel(node** root, node* fixmain) {
 	leftro(root, fixmain -> getParent());
 	sibling = fixmain -> getParent() -> getRight();
       }
-      if((sibling -> getLeft() != NULL || sibling -> getLeft() -> getCol() == 1) && (sibling -> getRight() != NULL || sibling -> getRight() -> getCol() == 1)) { //if both childs black case 2
+      if((sibling -> getLeft() == NULL || sibling -> getLeft() -> getCol() == 1) && (sibling -> getRight() == NULL || sibling -> getRight() -> getCol() == 1)) { //if both childs black case 2
 	sibling -> setCol(0);//sibling is red
 	fixmain = fixmain -> getParent();
-	if (sibling -> getRight() != NULL && sibling -> getRight() -> getCol() == 1) { //case 3 if sibling right is black
-	  sibling -> getLeft() -> setCol(1); //sibling left is black
-	  sibling -> setCol(0);//sibling is red
-	  rightro(root, sibling);
-	  sibling = fixmain -> getParent() -> getRight();
-	}
-	sibling -> setCol(fixmain -> getParent() -> getCol()); //Case 4
-	fixmain -> getParent() -> setCol(1);//parent is black
-	sibling -> getRight() -> setCol(1);//sibling right is black
-	leftro(root, fixmain -> getParent());
-	fixmain = (*root);
       }
+      else if (sibling -> getRight() == NULL && sibling -> getRight() -> getCol() == 1) { //case 3 if sibling right is black
+	sibling -> getLeft() -> setCol(1); //sibling left is black
+	sibling -> setCol(0);//sibling is red
+	rightro(root, sibling);
+	sibling = fixmain -> getParent() -> getRight();
+      }
+      if (fixmain -> getParent() == NULL) {
+	sibling -> setCol(1); //Case 4
+      }
+      else {
+	sibling -> setCol(fixmain -> getParent() -> getCol()); //Case 4
+	fixmain -> getParent() -> setCol(1);//parent black
+      }
+      if(sibling-> getRight() != NULL) {
+	sibling -> getRight() -> setCol(1);//sibling right is black
+      }
+      if(fixmain -> getLeft() != NULL) {
+	leftro(root, fixmain -> getParent());
+      }
+      fixmain = (*root);
     }
     else {
       node* sibling = fixmain -> getParent() -> getLeft();
@@ -302,21 +317,35 @@ void fixdel(node** root, node* fixmain) {
 	rightro(root, fixmain -> getParent());
 	sibling = fixmain -> getParent() -> getLeft();
       }
-      if((sibling -> getLeft() != NULL || sibling -> getLeft() -> getCol() == 1) && (sibling -> getRight() != NULL || sibling -> getRight() -> getCol() == 1)) { //if both childs black case 2
+      if((sibling -> getLeft() == NULL || sibling -> getLeft() -> getCol() == 1) && (sibling -> getRight() == NULL || sibling -> getRight() -> getCol() == 1)) { //if both childs black case 2
 	sibling -> setCol(0);//sibling becomes red
 	fixmain = fixmain -> getParent();
-	if (sibling -> getLeft() != NULL && sibling -> getLeft() -> getCol() == 1) { //case 3
-	  sibling -> getRight() -> setCol(1);//the sibling right becomes black
-	  sibling -> setCol(0); //sibling becomes red
-	  leftro(root, sibling);
-	  sibling = fixmain -> getParent() -> getLeft();
-	}
+	cout << "a" << endl;
+      }
+      else if (sibling -> getLeft() == NULL && sibling -> getLeft() -> getCol() == 1) { //case 3
+	cout << "b" << endl;
+	sibling -> getRight() -> setCol(1);//the sibling right becomes black
+	sibling -> setCol(0); //sibling becomes red
+	leftro(root, sibling);
+	sibling = fixmain -> getParent() -> getLeft();
+	cout << "c" << endl;
+      }
+      if (fixmain -> getParent() == NULL) {
+	sibling -> setCol(1); //Case 4
+      }
+      else {
 	sibling -> setCol(fixmain -> getParent() -> getCol()); //Case 4
 	fixmain -> getParent() -> setCol(1);//parent black
-	sibling -> getLeft() -> setCol(1);//siblings left child black
-	rightro(root, fixmain -> getParent());
-	fixmain = (*root);
       }
+      if (sibling -> getLeft() != NULL) {
+	sibling -> getLeft() -> setCol(1);//siblings left child black
+      }
+      if(fixmain -> getParent() != NULL) {
+	rightro(root, fixmain -> getParent());
+      }
+      fixmain = (*root);
+      cout << "d" << endl;
+      
     }
   }
   if(fixmain != NULL) {
