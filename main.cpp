@@ -266,6 +266,7 @@ void del (node** root, int del) {
     }
     if (tracker != deleting) { //got successor
       deleting -> setData(tracker -> getData());
+      deleting -> setCol(tracker -> getCol());
     }
     //if(tracker -> getCol() == 1) {
     //fixdel(root, trackchild);
