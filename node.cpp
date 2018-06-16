@@ -56,7 +56,7 @@ bool node :: getCol() {//returns color
 }
 
 void node :: setIsNil(bool newNil) {
-isNil = newNil
+  isNil = newNil;
 }
 
 bool node :: getIsNil() {

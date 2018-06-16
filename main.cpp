@@ -62,7 +62,7 @@ int main() {
 }
 
 void add (node** root, node* parent, int toin){
-  if (parent -> getIsNil == true) {//Will only be the case with the first pass in of root
+  if (parent -> getIsNil() == true) {//Will only be the case with the first pass in of root
     parent -> setIsNil(false);
     parent -> setCol(1);//becomes black
     parent -> setData(toin);//sets the data to be input
@@ -246,6 +246,7 @@ void del (node** root, int del) {
   node* deleting = search((*root), del);
   node* tracker = NULL;
   node* trackchild;
+  node* sentinal = new node();
   if (deleting != NULL) {
     if (deleting -> getLeft() == NULL || deleting -> getRight() == NULL) {
       tracker = deleting;
@@ -258,6 +259,22 @@ void del (node** root, int del) {
     }
     else{
       trackchild = tracker -> getRight();
+    }
+    if (trackchild == NULL) {
+      trackchild = sentinal;
+      trackchild -> setCol(1);
+    }
+    trackchild -> setParent(tracker -> getParent());
+    if (tracker -> getParent() == NULL) {
+      *root = trackchild;
+    }
+    else {
+      if(tracker == tracker -> getParent() -> getLeft()) {
+	tracker -> getParent() -> setLeft(trackchild);
+      }
+      else {
+	tracker -> getParent() -> setRight(trackchild);
+      }
     }
     if(tracker -> getCol() == 1) { 
       if(trackchild -> getCol() == 1) {
@@ -324,7 +341,8 @@ void delcase2(node** root, node* checking) { //if the sibling is red
 void delcase3(node** root, node* checking) { //will run if parent, sibling, and sibling childs black
   node* sibling = findsib(checking);
 
-  if(checking -> getParent() -> getCol() == 1 && sibling -> getCol() == 1 && sibling -> getLeft() -> getCol() == 1 && sibling -> getLeft() -> getCol() ==1){//checks for parent sibling and sibling children being black
+  if(checking -> getParent() -> getCol() == 1 && sibling -> getCol() == 1){//checks for parent sibling and sibling children being black
+    
     sibling -> setCol(0); //sibling just needs to be red
     delcase1(root, checking -> getParent()); //Runs first case with one up tree
   }
@@ -336,9 +354,11 @@ void delcase3(node** root, node* checking) { //will run if parent, sibling, and 
 void delcase4(node** root, node* checking) {//sibling and its children are black, parent is red
   node* sibling = findsib(checking);
   
-  if(checking -> getParent() -> getCol() == 0 && sibling -> getCol() == 1 && sibling -> getLeft() -> getCol() == 1 && sibling -> getLeft()-> getCol() == 1){//checks for parent red sibling and sibling children being black
-    sibling -> setCol(0); //Sibling becomes red
-    checking -> getParent() -> setCol(1);//parent is black
+  if(checking -> getParent() -> getCol() == 0 && sibling -> getCol() == 1){//checks for parent red sibling and sibling children being black
+    if((sibling -> getLeft() == NULL || sibling -> getLeft() -> getCol() == 1) && (sibling -> getRight() == NULL || sibling -> getRight() -> getCol() == 1)) {
+      sibling -> setCol(0); //Sibling becomes red
+      checking -> getParent() -> setCol(1);//parent is black
+    }
   }
   else {
     delcase5(root, checking);
@@ -349,12 +369,12 @@ void delcase5(node** root, node* checking) {
   node* sibling = findsib(checking);
 
   if(sibling -> getCol() == 1) { //redundancy for case 2
-    if(checking == checking -> getParent() -> getLeft() && sibling -> getRight() -> getCol() == 1) { //left of parent, sib right black
+    if(checking == checking -> getParent() -> getLeft() && sibling -> getRight() == NULL && sibling -> getRight() -> getCol() == 1) { //left of parent, sib right black
       sibling -> setCol(0); //sibling becomes red
       sibling -> getLeft() -> setCol(1); //Was red due to case 2-4
       rightro(root, sibling);
     }
-    else if(checking == checking -> getParent() -> getRight() && sibling -> getLeft() -> getCol() == 1) { //right of parent, sib left black
+    else if(checking == checking -> getParent() -> getRight() && sibling -> getLeft() != NULL && sibling -> getLeft() -> getCol() == 1) { //right of parent, sib left black
       sibling -> setCol(0); //sibling becomes red
       sibling -> getRight() -> setCol(1); //Was red due to case 2-4
       leftro(root, sibling);
