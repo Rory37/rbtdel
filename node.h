@@ -16,12 +16,17 @@ class node {
   int getData();
   void setCol(bool);
   bool getCol();
+  void setIsNil(bool);
+  bool getIsNil();
+  void reset();
+  
  private:
   node* left;//holds left node
   node* right;//holds right node
   node* parent;//holds parent node
   int data;//holds data
-  bool color;//holds color -- 0 = red, 1 == black
+  bool color;//holds color -- 0 = red, 1 = black
+  bool isNil;//Placeholder during empty tree
 };
 
 #endif
