@@ -7,6 +7,7 @@ node :: node() { //constructor
   parent = NULL;
   color = 0;
   data = 0;
+  isNil = true;
 }
 
 node :: ~node() {//destructor
@@ -52,4 +53,21 @@ void node :: setCol(bool newcol) {//sets color
 
 bool node :: getCol() {//returns color
   return color;
+}
+
+void node :: setIsNil(bool newNil) {
+isNil = newNil
+}
+
+bool node :: getIsNil() {
+  return isNil;
+}
+
+void node :: reset() {
+  left = NULL;
+  right = NULL;
+  parent = NULL;
+  color = 0;
+  data = 0;
+  isNil = true;
 }

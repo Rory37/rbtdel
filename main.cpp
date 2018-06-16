@@ -62,13 +62,15 @@ int main() {
 }
 
 void add (node** root, node* parent, int toin){
-  if (parent -> getData() == 0) {//Will only be the case with the first pass in of root
+  if (parent -> getIsNil == true) {//Will only be the case with the first pass in of root
+    parent -> setIsNil(false);
     parent -> setCol(1);//becomes black
     parent -> setData(toin);//sets the data to be input
   }
   else { //adds like basic binary tree
     if(toin < parent -> getData()) {//if less than data of parent
       if (parent -> getLeft() == NULL) {//if left doesn't exists
+	parent -> setIsNil(false);
 	node* newnode = new node(); //Makes new node
 	newnode -> setData(toin); //Sets node data to be input
 	newnode -> setParent(parent); //Sets the new nodes parents
@@ -81,6 +83,7 @@ void add (node** root, node* parent, int toin){
     }
     else { //if right or equal
       if (parent -> getRight() == NULL) { //if right doesn't exist
+	parent -> setIsNil(false);
 	node* newnode = new node(); //Makes new node
 	newnode -> setData(toin);///Sets data to input
 	newnode -> setParent(parent); //sets parent of new node
