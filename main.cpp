@@ -13,8 +13,15 @@ void rightro(node**, node*);
 void fix(node**, node*);
 node* search(node*, int);
 void del(node**, int);
-node* successor(node*);
+node* predecessor(node*);
 void fixdel(node**, node*);
+node* findsib(node*);
+void delcase1(node**, node*);
+void delcase2(node**, node*);
+void delcase3(node**, node*);
+void delcase4(node**, node*);
+void delcase5(node**, node*);
+void delcase6(node**, node*);
 
 int main() {
   node* root = new node(); //will be root of tree
@@ -88,7 +95,7 @@ void add (node** root, node* parent, int toin){
 }
 
 void read(node** root) { //read in file
-  cout << "Please input a filename" << endl;
+  /*cout << "Please input a filename" << endl;
   char filename[80];//for name of file
   cin.ignore();//ignores past cin
   cin.getline(filename, 80);//takes in the name
@@ -105,7 +112,7 @@ void read(node** root) { //read in file
       add(&(*root), (*root), in); //Runs add with each data segment
     }
   }
-  newFile.close();//closes file
+  newFile.close();//closes file */
 }
 
 void print(node* parent, int count) {
@@ -241,10 +248,7 @@ void del (node** root, int del) {
       tracker = deleting;
     }
     else {
-      tracker = successor(deleting);
-    }
-    if(tracker -> getCol() == 1) {
-      fixdel(root, tracker);
+      tracker = predecessor(deleting);
     }
     if(tracker -> getLeft() != NULL) {
       trackchild = tracker -> getLeft();
@@ -252,10 +256,15 @@ void del (node** root, int del) {
     else{
       trackchild = tracker -> getRight();
     }
-    //if(tracker -> getCol() == 1) {
-      //fixdel(root, tracker);
-      //}
-    if(tracker == (*root)) {//is root
+    if(tracker -> getCol() == 1) { 
+      if(trackchild -> getCol() == 1) {
+	delcase1(root, tracker);
+      }
+      else {
+	trackchild -> setCol(1);
+      }
+    }
+    /*if(tracker == (*root)) {//is root
       (*root) = trackchild;//root becomes the child
     }
     else if (tracker == tracker -> getParent() -> getLeft()){//is left child
@@ -270,13 +279,106 @@ void del (node** root, int del) {
     }
     //if(tracker -> getCol() == 1) {
     //fixdel(root, trackchild);
-    //}
+    //}*/
     //probably should return tracker to delete
   }
 }
 
+node* findsib(node* checking) {
+  node* sibling;
+  if(checking -> getParent() -> getLeft() == checking){
+    sibling = checking -> getParent() -> getRight();
+  }
+  else {
+    sibling = checking -> getParent() -> getLeft();
+  }
+}
+
+void delcase1(node** root, node* checking) {
+  if(checking -> getParent() != NULL) {//checks if root
+    delcase2(root, checking); //Moves to next case
+  }
+  //Runs off because top of tree is reached
+}
+
+void delcase2(node** root, node* checking) { //if the sibling is red
+  node* sibling = findsib(checking);
+
+  if (sibling -> getCol() == 0) { //if sibling red
+    checking -> getParent() -> setCol(0);//parent is red
+    sibling -> setCol(1);//sibling is black
+    if (checking == checking -> getParent() -> getLeft()) { //if left child
+      leftro(root, checking -> getParent()); 
+    }
+    else {
+      rightro(root, checking -> getParent());
+    }
+  }
+  delcase3(root, checking); //moves to next deletion case
+  //Can skip case 2 to case 3
+}
+
+void delcase3(node** root, node* checking) { //will run if parent, sibling, and sibling childs black
+  node* sibling = findsib(checking);
+
+  if(checking -> getParent() -> getCol() == 1 && sibling -> getCol() == 1 && sibling -> getLeft() -> getCol() == 1 && sibling -> getLeft() -> getCol() ==1){//checks for parent sibling and sibling children being black
+    sibling -> setCol(0); //sibling just needs to be red
+    delcase1(root, checking -> getParent()); //Runs first case with one up tree
+  }
+  else {
+    delcase4(root, checking);//moves to next case
+  }
+}
+
+void delcase4(node** root, node* checking) {//sibling and its children are black, parent is red
+  node* sibling = findsib(checking);
+  
+  if(checking -> getParent() -> getCol() == 0 && sibling -> getCol() == 1 && sibling -> getLeft() -> getCol() == 1 && sibling -> getLeft()-> getCol() == 1){//checks for parent red sibling and sibling children being black
+    sibling -> setCol(0); //Sibling becomes red
+    checking -> getParent() -> setCol(1);//parent is black
+  }
+  else {
+    delcase5(root, checking);
+  }
+}
+
+void delcase5(node** root, node* checking) {
+  node* sibling = findsib(checking);
+
+  if(sibling -> getCol() == 1) { //redundancy for case 2
+    if(checking == checking -> getParent() -> getLeft() && sibling -> getRight() -> getCol() == 1) { //left of parent, sib right black
+      sibling -> setCol(0); //sibling becomes red
+      sibling -> getLeft() -> setCol(1); //Was red due to case 2-4
+      rightro(root, sibling);
+    }
+    else if(checking == checking -> getParent() -> getRight() && sibling -> getLeft() -> getCol() == 1) { //right of parent, sib left black
+      sibling -> setCol(0); //sibling becomes red
+      sibling -> getRight() -> setCol(1); //Was red due to case 2-4
+      leftro(root, sibling);
+    }
+  }
+  delcase6(root, checking);
+}
+
+void delcase6(node** root, node* checking) { //s is black, checking is black, one s child is red
+  node* sibling = findsib(checking);
+
+  sibling -> setCol(checking -> getParent() -> getCol()); //copies color down
+  checking -> getParent() -> setCol(1);
+
+  if(checking == checking -> getParent() -> getLeft()) { //left child
+    sibling -> getRight() -> setCol(1);
+    leftro(root, checking -> getParent());
+  }
+  else {
+    sibling -> getLeft() -> setCol(1);
+    rightro(root, checking -> getParent());
+  }
+  
+}
+
 void fixdel(node** root, node* fixmain) {
-  while (fixmain != (*root) && fixmain -> getCol() == 1) {//It doesn't run right since NULL isn't technically a node I think
+  /*while (fixmain != (*root) && fixmain -> getCol() == 1) {//It doesn't run right since NULL isn't technically a node I think
     if(fixmain == fixmain -> getParent() -> getLeft()) {
       node* sibling = fixmain -> getParent() -> getRight();
       if(sibling != NULL && sibling -> getCol() == 0) {//Case 1 sibling is red
@@ -351,15 +453,15 @@ void fixdel(node** root, node* fixmain) {
   }
   if(fixmain != NULL) {
     fixmain -> setCol(1);//root becomes black
-  }
+  }*/
 }
 
-node* successor(node* top) {
-  if(top -> getRight() != NULL) {
+node* predecessor(node* top) {
+  if(top -> getLeft() != NULL) {
     top = top -> getRight();
   }
-  while(top -> getLeft() != NULL) {
-    top = top -> getLeft();
+  while(top -> getRight() != NULL) {
+    top = top -> getRight();
   }
   return top;
 }
