@@ -98,7 +98,7 @@ void add (node** root, node* parent, int toin){
 }
 
 void read(node** root) { //read in file
-  /*cout << "Please input a filename" << endl;
+  cout << "Please input a filename" << endl;
   char filename[80];//for name of file
   cin.ignore();//ignores past cin
   cin.getline(filename, 80);//takes in the name
@@ -115,7 +115,7 @@ void read(node** root) { //read in file
       add(&(*root), (*root), in); //Runs add with each data segment
     }
   }
-  newFile.close();//closes file */
+  newFile.close();//closes file 
 }
 
 void print(node* parent, int count) {
