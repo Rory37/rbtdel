@@ -2,12 +2,13 @@
 #include <iostream>
 //Adapted from binary tree
 node :: node() { //constructor
+  //All children and parent NULL
   left = NULL;
   right = NULL;
   parent = NULL;
-  color = 0;
+  color = 0; //default red
   data = 0;
-  isNil = true;
+  isNil = true; //used for empty tree and sentinel
 }
 
 node :: ~node() {//destructor
@@ -55,15 +56,15 @@ bool node :: getCol() {//returns color
   return color;
 }
 
-void node :: setIsNil(bool newNil) {
+void node :: setIsNil(bool newNil) {//updates isNil
   isNil = newNil;
 }
 
-bool node :: getIsNil() {
+bool node :: getIsNil() { //returns isNil
   return isNil;
 }
 
-void node :: reset() {
+void node :: reset() {//used to reset tree, equivalent to empty node
   left = NULL;
   right = NULL;
   parent = NULL;

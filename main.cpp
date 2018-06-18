@@ -5,6 +5,7 @@
 #include <stdlib.h>
 using namespace std;
 
+//prototypes
 void print(node*, int);
 void add(node**, node*, int);
 void read(node**);
@@ -247,39 +248,17 @@ node* search (node* check, int in) {
 }
 
 void del (node** root, int del) {
-  node* deleting = search((*root), del);
+  node* deleting = search((*root), del);  //searches for node that wants to be deleted
   node* tracker = NULL;
   node* trackchild;
-  node* sentinel = new node();
-  if (deleting != NULL) {
-    if (deleting -> getLeft() == NULL || deleting -> getRight() == NULL) {
+  node* sentinel = new node(); //initiallizes sentinel node
+  if (deleting != NULL) { //if in tree
+    if (deleting -> getLeft() == NULL || deleting -> getRight() == NULL) {//if one child NULL or both child NULL
       tracker = deleting;
     }
     else {
-      tracker = predecessor(deleting);
+      tracker = predecessor(deleting); //retrieves predecessor to tracker
     }
-    /*if(tracker -> getLeft() != NULL) {
-      trackchild = tracker -> getLeft();
-    }
-    else{
-      trackchild = tracker -> getRight();
-    }
-    if (trackchild == NULL) {
-      trackchild = sentinel;
-      trackchild -> setCol(1);
-    }
-    trackchild -> setParent(tracker -> getParent());
-    if (tracker -> getParent() == NULL) {
-      *root = trackchild;
-    }
-    else {
-      if(tracker == tracker -> getParent() -> getLeft()) {
-	tracker -> getParent() -> setLeft(trackchild);
-      }
-      else {
-	tracker -> getParent() -> setRight(trackchild);
-      }
-      }*/
     if (tracker != deleting) { //got predecessor
       deleting -> setData(tracker -> getData());
     }
@@ -294,7 +273,7 @@ void del (node** root, int del) {
       trackchild = sentinel;
       trackchild -> setCol(1);
     }
-    trackchild -> setParent(tracker -> getParent());
+    trackchild -> setParent(tracker -> getParent()); //updates parent
     if (tracker -> getParent() == NULL) { //root node being deleted
       (*root) = trackchild; // root updated to be child
     }
@@ -307,22 +286,22 @@ void del (node** root, int del) {
 	tracker -> getParent() -> setRight(trackchild);//parent right child is trackchild
       }
     }
-    if(tracker -> getCol() == 1) { 
-      if(trackchild -> getCol() == 1) {
-	delcase1(root, trackchild);
+    if(tracker -> getCol() == 1) {  //if tracker is black
+      if(trackchild -> getCol() == 1) { //if child is black
+	delcase1(root, trackchild); //go to case 1
       }
       else {
-	trackchild -> setCol(1);
+	trackchild -> setCol(1); //otherwise just update to be black
       }
     }
-    if((trackchild -> getIsNil() == true) && (trackchild != (*root))) {
-      if(trackchild == tracker -> getParent() -> getLeft()) {
+    if((trackchild -> getIsNil() == true) && (trackchild != (*root))) {//if it is a sentinel
+      if(trackchild == tracker -> getParent() -> getLeft()) {//updates parents children
 	trackchild -> getParent() -> setLeft(NULL);
       }
       else {
 	trackchild -> getParent() -> setRight(NULL);
       }
-      trackchild -> setParent(NULL);
+      trackchild -> setParent(NULL); //prep trackchild to delete
       delete trackchild;
     }
     //deallocate spliced node
@@ -331,12 +310,12 @@ void del (node** root, int del) {
 }
 
 node* findsib(node* checking) {
-  node* sibling;
-  if(checking -> getParent() -> getLeft() == checking){
-    sibling = checking -> getParent() -> getRight();
+  node* sibling;//holds sibling of checking
+  if(checking -> getParent() -> getLeft() == checking){//checks parent left
+    sibling = checking -> getParent() -> getRight(); //if checking parent left, sibling right
   }
   else {
-    sibling = checking -> getParent() -> getLeft();
+    sibling = checking -> getParent() -> getLeft();//otherwise, sibling is parent left
   }
   return sibling;
 }
@@ -438,10 +417,10 @@ void delcase6(node** root, node* checking) { //s is black, checking is black, on
 }
 
 node* predecessor(node* top) {
-  if(top -> getLeft() != NULL) {
+  if(top -> getLeft() != NULL) { //goes one left
     top = top -> getLeft();
   }
-  while(top -> getRight() != NULL) {
+  while(top -> getRight() != NULL) {//goes all the way right
     top = top -> getRight();
   }
   return top;
